@@ -7,8 +7,8 @@ import {
 import {
   cancelBooking,
   createBooking,
-  fetchAvailableTeachers,
-  fetchUpcomingBookings,
+  getAvailableTeachers,
+  getUpcomingBookings,
 } from "../../api/bookings.ts";
 import type {
   AvailableTeacher,
@@ -16,6 +16,7 @@ import type {
   MartialArtClass,
 } from "../../api/types.ts";
 import { AppLayout } from "../../components/AppLayout.tsx";
+import { BackButton } from "../../components/BackButton";
 import { useAuth } from "../../context/AuthContext.tsx";
 import { useLanguage } from "../../context/LanguageContext.tsx";
 import {
@@ -148,8 +149,8 @@ export function SchedulingPage() {
 
       try {
         const [teachers, upcomingBookings] = await Promise.all([
-          fetchAvailableTeachers(authToken),
-          fetchUpcomingBookings(authToken),
+          getAvailableTeachers(authToken),
+          getUpcomingBookings(authToken),
         ]);
         setAvailableTeachersState({
           data: teachers,
@@ -300,6 +301,7 @@ export function SchedulingPage() {
 
   return (
     <AppLayout>
+      <BackButton />
       <div className="dashboard-stack">
         <section className="panel glass-panel">
           <div className="panel-header">

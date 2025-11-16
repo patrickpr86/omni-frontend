@@ -1,4 +1,5 @@
 import { AppLayout } from "../components/AppLayout";
+import { BackButton } from "../components/BackButton";
 import { useLanguage } from "../context/LanguageContext";
 
 export function SupportPage() {
@@ -6,6 +7,7 @@ export function SupportPage() {
 
   return (
     <AppLayout>
+      <BackButton />
       <div className="page-header">
         <h1 className="page-title">
           {language === "pt" ? "Atendimento" : "Support"}
@@ -62,4 +64,5 @@ export function SupportPage() {
     </AppLayout>
   );
 }
+
 

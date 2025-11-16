@@ -140,6 +140,13 @@ export function LoginPage() {
               >
                 {loading ? (language === "pt" ? "Entrando..." : "Signing in...") : "login"}
               </button>
+
+              <span className="login-forgot" style={{ textAlign: "center", marginTop: "16px" }}>
+                {language === "pt" ? "Não tem uma conta?" : "Don't have an account?"}{" "}
+                <Link to="/cadastro" className="login-link">
+                  {language === "pt" ? "Criar conta" : "Sign up"}
+                </Link>
+              </span>
             </div>
           </form>
         </div>

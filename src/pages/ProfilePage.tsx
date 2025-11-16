@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchProfile } from "../api/auth.ts";
 import { updatePassword, updateProfile } from "../api/profile.ts";
 import { AppLayout } from "../components/AppLayout.tsx";
+import { BackButton } from "../components/BackButton";
 import { useAuth } from "../context/AuthContext.tsx";
 import { useLanguage } from "../context/LanguageContext.tsx";
 import {
@@ -385,6 +386,7 @@ export function ProfilePage() {
 
   return (
     <AppLayout>
+      <BackButton />
       <>
         <section className="panel">
           <div className="panel-header">

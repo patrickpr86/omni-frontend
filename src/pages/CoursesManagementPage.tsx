@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import type { FormEvent } from "react";
 import { AppLayout } from "../components/AppLayout";
+import { BackButton } from "../components/BackButton";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import { fetchAllCoursesAdmin, createCourse, deleteCourse, fetchCourseMetrics } from "../api/courses";
@@ -69,6 +70,7 @@ export function CoursesManagementPage() {
 
   return (
     <AppLayout>
+      <BackButton to="/painel/admin" />
       <div className="page-header">
         <h1 className="page-title">
           {language === "pt" ? "Gerenciar Cursos" : "Manage Courses"}
@@ -183,4 +185,5 @@ export function CoursesManagementPage() {
     </AppLayout>
   );
 }
+
 

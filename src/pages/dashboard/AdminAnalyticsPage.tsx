@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { fetchDashboardMetrics } from "../../api/analytics.ts";
 import type { DashboardMetrics } from "../../api/types.ts";
 import { AppLayout } from "../../components/AppLayout.tsx";
+import { BackButton } from "../../components/BackButton";
 import { AnalyticsHighlights } from "../../components/AnalyticsHighlights.tsx";
 import { useAuth } from "../../context/AuthContext.tsx";
 import { useLanguage } from "../../context/LanguageContext.tsx";
@@ -84,6 +85,7 @@ export function AdminAnalyticsPage() {
 
   return (
     <AppLayout>
+      <BackButton to="/painel/admin" />
       <div className="dashboard-stack">
         <section className="metrics-showcase">
           <div className="metrics-showcase-header">

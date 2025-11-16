@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  fetchUpcomingBookings,
+  getUpcomingBookings,
 } from "../../api/bookings.ts";
 import type { Booking } from "../../api/types.ts";
 import { AppLayout } from "../../components/AppLayout.tsx";
+import { BackButton } from "../../components/BackButton";
 import { useAuth } from "../../context/AuthContext.tsx";
 import { useLanguage } from "../../context/LanguageContext.tsx";
 import {
@@ -167,7 +168,7 @@ export function StudentDashboardPage() {
       if (!token) return;
       setBookingsState((prev) => ({ ...prev, loading: true, error: null }));
       try {
-        const data = await fetchUpcomingBookings(token);
+        const data = await getUpcomingBookings(token);
         setBookingsState({ data, loading: false, error: null });
       } catch (err) {
         const message =
@@ -262,6 +263,7 @@ export function StudentDashboardPage() {
 
   return (
     <AppLayout>
+      <BackButton />
       <div className="dashboard-stack">
         <section className="content-rail">
           <div className="content-rail-header">

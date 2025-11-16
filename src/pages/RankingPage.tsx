@@ -1,4 +1,5 @@
 import { AppLayout } from "../components/AppLayout";
+import { BackButton } from "../components/BackButton";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 
@@ -21,6 +22,7 @@ export function RankingPage() {
 
   return (
     <AppLayout>
+      <BackButton />
       <div className="page-header">
         <h1 className="page-title">Ranking</h1>
         <p className="page-subtitle">
@@ -74,4 +76,5 @@ export function RankingPage() {
     </AppLayout>
   );
 }
+
 

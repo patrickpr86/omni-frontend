@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   confirmBooking,
-  fetchPendingBookings,
-  fetchUpcomingBookings,
+  getPendingBookings,
+  getUpcomingBookings,
   rejectBooking,
 } from "../../api/bookings.ts";
 import type { Booking } from "../../api/types.ts";
 import { AppLayout } from "../../components/AppLayout.tsx";
+import { BackButton } from "../../components/BackButton";
 import { useAuth } from "../../context/AuthContext.tsx";
 import { useLanguage } from "../../context/LanguageContext.tsx";
 import {
@@ -20,8 +21,6 @@ import {
 } from "./dashboardUtils.ts";
 import type { BookingFilter, FetchState } from "./dashboardUtils.ts";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-
-type TeacherScope = "teacher";
 
 export function TeacherDashboardPage() {
   const { token } = useAuth();
@@ -44,8 +43,8 @@ export function TeacherDashboardPage() {
     setPendingState((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const [schedule, pending] = await Promise.all([
-        fetchUpcomingBookings(token, "teacher" as TeacherScope),
-        fetchPendingBookings(token),
+        getUpcomingBookings(token),
+        getPendingBookings(token),
       ]);
       setScheduleState({ data: schedule, loading: false, error: null });
       setPendingState({ data: pending, loading: false, error: null });
@@ -133,7 +132,7 @@ export function TeacherDashboardPage() {
       const updated =
         action === "confirm"
           ? await confirmBooking(token, bookingId)
-          : await rejectBooking(token, bookingId);
+          : await rejectBooking(token, bookingId, { teacherNotes: "Recusado" });
 
       setPendingState((prev) => ({
         ...prev,
@@ -182,6 +181,7 @@ export function TeacherDashboardPage() {
 
   return (
     <AppLayout>
+      <BackButton />
       <div className="dashboard-stack">
         <section className="metrics-showcase">
           <div className="metrics-showcase-header">

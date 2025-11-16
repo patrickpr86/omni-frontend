@@ -1,4 +1,5 @@
 import { AppLayout } from "../components/AppLayout";
+import { BackButton } from "../components/BackButton";
 import { useLanguage } from "../context/LanguageContext";
 
 export function ContentsPage() {
@@ -57,6 +58,7 @@ export function ContentsPage() {
 
   return (
     <AppLayout>
+      <BackButton />
       <div className="page-header">
         <h1 className="page-title">
           {language === "pt" ? "Conteúdos" : "Contents"}
@@ -86,4 +88,5 @@ export function ContentsPage() {
     </AppLayout>
   );
 }
+
 

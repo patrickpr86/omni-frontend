@@ -1,4 +1,5 @@
 import { AppLayout } from "../components/AppLayout";
+import { BackButton } from "../components/BackButton";
 import { useLanguage } from "../context/LanguageContext";
 
 export function NotificationsPage() {
@@ -36,6 +37,7 @@ export function NotificationsPage() {
 
   return (
     <AppLayout>
+      <BackButton />
       <div className="page-header">
         <h1 className="page-title">
           {language === "pt" ? "Notificações" : "Notifications"}

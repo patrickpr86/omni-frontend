@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { AppLayout } from "../components/AppLayout";
+import { BackButton } from "../components/BackButton";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 
@@ -60,6 +61,7 @@ export function MyAccountPage() {
 
   return (
     <AppLayout>
+      <BackButton />
       <div className="page-header">
         <h1 className="page-title">
           {language === "pt" ? "Minha Conta" : "My Account"}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { AppLayout } from "../components/AppLayout";
+import { BackButton } from "../components/BackButton";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import { fetchCourses, enrollInCourse } from "../api/courses";
@@ -41,6 +42,7 @@ export function CoursesPage() {
 
   return (
     <AppLayout>
+      <BackButton />
       <div className="page-header">
         <h1 className="page-title">
           {language === "pt" ? "Cursos Disponíveis" : "Available Courses"}
@@ -89,4 +91,5 @@ export function CoursesPage() {
     </AppLayout>
   );
 }
+
 
