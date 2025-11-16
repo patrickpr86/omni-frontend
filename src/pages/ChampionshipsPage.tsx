@@ -9,7 +9,6 @@ import {
   type TimelineEvent,
   formatDate,
   formatTime,
-  formatPrice,
   getMonthName,
 } from "../api/timeline";
 
@@ -52,18 +51,6 @@ function ChampionshipModal({
       setIsRegistering(false);
     }
   };
-
-  const parseDetails = (details: string | null | undefined) => {
-    if (!details) return null;
-    try {
-      return JSON.parse(details);
-    } catch {
-      return { text: details };
-    }
-  };
-
-  const registrationData = parseDetails(championship.registrationDetails);
-  const prizeData = parseDetails(championship.prizeDetails);
 
   return (
     <div
@@ -159,126 +146,6 @@ function ChampionshipModal({
             </div>
           )}
 
-          {/* Registration Details */}
-          {registrationData && (
-            <div>
-              <h3 style={{ marginBottom: "12px", fontSize: "18px", color: "var(--accent-primary)" }}>
-                💰 {language === "pt" ? "Inscrição" : "Registration"}
-              </h3>
-              <div
-                style={{
-                  background: "var(--bg-secondary)",
-                  padding: "16px",
-                  borderRadius: "12px",
-                  whiteSpace: "pre-wrap",
-                  color: "var(--text-secondary)",
-                  lineHeight: "1.6",
-                  fontSize: "14px",
-                }}
-              >
-                {registrationData.text || JSON.stringify(registrationData, null, 2)}
-              </div>
-              {registrationData.prices && registrationData.prices.length > 0 && (
-                <div style={{ marginTop: "12px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                  {registrationData.prices.map((price: string, idx: number) => (
-                    <span
-                      key={idx}
-                      style={{
-                        padding: "6px 12px",
-                        background: "var(--accent-primary)",
-                        color: "white",
-                        borderRadius: "8px",
-                        fontSize: "13px",
-                        fontWeight: "600",
-                      }}
-                    >
-                      R$ {price}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Prize Details */}
-          {prizeData && (
-            <div>
-              <h3 style={{ marginBottom: "12px", fontSize: "18px", color: "var(--accent-primary)" }}>
-                🏆 {language === "pt" ? "Premiação" : "Prizes"}
-              </h3>
-              <div
-                style={{
-                  background: "var(--bg-secondary)",
-                  padding: "16px",
-                  borderRadius: "12px",
-                  whiteSpace: "pre-wrap",
-                  color: "var(--text-secondary)",
-                  lineHeight: "1.6",
-                  fontSize: "14px",
-                }}
-              >
-                {prizeData.text || JSON.stringify(prizeData, null, 2)}
-              </div>
-              {prizeData.prizes && prizeData.prizes.length > 0 && (
-                <div style={{ marginTop: "12px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                  {prizeData.prizes.map((prize: string, idx: number) => (
-                    <span
-                      key={idx}
-                      style={{
-                        padding: "6px 12px",
-                        background: "var(--success)",
-                        color: "white",
-                        borderRadius: "8px",
-                        fontSize: "13px",
-                        fontWeight: "600",
-                      }}
-                    >
-                      R$ {prize}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Summary Cards */}
-          <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
-            {championship.registrationPrice && (
-              <div
-                style={{
-                  flex: 1,
-                  minWidth: "200px",
-                  padding: "16px",
-                  background: "linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))",
-                  borderRadius: "12px",
-                  color: "white",
-                }}
-              >
-                <div style={{ fontSize: "14px", opacity: 0.9, marginBottom: "4px" }}>
-                  {language === "pt" ? "Valor da Inscrição" : "Registration Price"}
-                </div>
-                <div style={{ fontSize: "24px", fontWeight: "700" }}>{formatPrice(championship.registrationPrice)}</div>
-              </div>
-            )}
-
-            {championship.prizePool && (
-              <div
-                style={{
-                  flex: 1,
-                  minWidth: "200px",
-                  padding: "16px",
-                  background: "linear-gradient(135deg, var(--success), #22c55e)",
-                  borderRadius: "12px",
-                  color: "white",
-                }}
-              >
-                <div style={{ fontSize: "14px", opacity: 0.9, marginBottom: "4px" }}>
-                  {language === "pt" ? "Premiação Total" : "Total Prize Pool"}
-                </div>
-                <div style={{ fontSize: "24px", fontWeight: "700" }}>{formatPrice(championship.prizePool)}</div>
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Footer with Action Buttons */}
@@ -553,58 +420,22 @@ export function ChampionshipsPage() {
                       </div>
                     )}
 
-                    <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginTop: "12px" }}>
-                      {(championship.registrationPrice != null && 
-                        championship.registrationPrice !== undefined && 
-                        Number(championship.registrationPrice) > 0) && (
-                        <div
-                          style={{
-                            padding: "10px 14px",
-                            background: "linear-gradient(135deg, var(--accent-primary), var(--accent-secondary))",
-                            color: "white",
-                            borderRadius: "10px",
-                            fontWeight: "700",
-                            fontSize: "14px",
-                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-                          }}
-                        >
-                          💰 {formatPrice(championship.registrationPrice)}
-                        </div>
-                      )}
-
-                      {(championship.prizePool != null && 
-                        championship.prizePool !== undefined && 
-                        Number(championship.prizePool) > 0) && (
-                        <div
-                          style={{
-                            padding: "10px 14px",
-                            background: "linear-gradient(135deg, var(--success), #22c55e)",
-                            color: "white",
-                            borderRadius: "10px",
-                            fontWeight: "700",
-                            fontSize: "14px",
-                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-                          }}
-                        >
-                          🏆 {formatPrice(championship.prizePool)}
-                        </div>
-                      )}
-
-                      {championship.isExternal && (
-                        <div
-                          style={{
-                            padding: "8px 12px",
-                            background: "var(--warning)",
-                            color: "white",
-                            borderRadius: "8px",
-                            fontSize: "12px",
-                            fontWeight: "600",
-                          }}
-                        >
-                          {language === "pt" ? "Externo" : "External"}
-                        </div>
-                      )}
-                    </div>
+                    {championship.isExternal && (
+                      <div
+                        style={{
+                          marginTop: "12px",
+                          padding: "8px 12px",
+                          background: "var(--warning)",
+                          color: "white",
+                          borderRadius: "8px",
+                          fontSize: "12px",
+                          fontWeight: "600",
+                          display: "inline-flex",
+                        }}
+                      >
+                        {language === "pt" ? "Externo" : "External"}
+                      </div>
+                    )}
 
                     <div style={{ marginTop: "12px", fontSize: "13px", color: "var(--text-muted)" }}>
                       {language === "pt" ? "Clique para ver detalhes completos" : "Click to view full details"}
@@ -633,4 +464,3 @@ export function ChampionshipsPage() {
     </AppLayout>
   );
 }
-

@@ -15,7 +15,7 @@ import {
   formatTime,
   formatPrice,
 } from "../api/timeline";
-import { SyncIcon, CalendarIcon, TrophyIcon, EventIcon, LocationIcon, ClockIcon, MoneyIcon } from "../components/Icons";
+import { SyncIcon, CalendarIcon, TrophyIcon, EventIcon, LocationIcon, ClockIcon, MoneyIcon, PlusIcon } from "../components/Icons";
 
 export function AdminTimelinePage() {
   const { token } = useAuth();
@@ -427,13 +427,13 @@ export function AdminTimelinePage() {
                     {event.location}
                   </div>
                 )}
-                {event.registrationPrice && (
+                {!event.isExternal && event.registrationPrice && (
                   <div style={{ fontWeight: "600", color: "var(--accent-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
                     <MoneyIcon size={14} />
                     {formatPrice(event.registrationPrice)}
                   </div>
                 )}
-                {event.prizePool && (
+                {!event.isExternal && event.prizePool && (
                   <div style={{ fontWeight: "600", color: "var(--success)", display: "flex", alignItems: "center", gap: "6px" }}>
                     <TrophyIcon size={14} />
                     Premiação: {formatPrice(event.prizePool)}
@@ -459,4 +459,3 @@ export function AdminTimelinePage() {
     </AppLayout>
   );
 }
-

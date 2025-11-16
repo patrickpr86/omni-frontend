@@ -217,12 +217,12 @@ export function TimelinePage() {
                         {event.location && (
                           <span className="event-detail">📍 {event.location}</span>
                         )}
-                        {event.registrationPrice && (
+                        {!event.isExternal && event.registrationPrice && (
                           <span className="event-detail" style={{ fontWeight: "600", color: "var(--accent-primary)" }}>
                             💰 {formatPrice(event.registrationPrice)}
                           </span>
                         )}
-                        {event.prizePool && (
+                        {!event.isExternal && event.prizePool && (
                           <span className="event-detail" style={{ fontWeight: "600", color: "var(--success)" }}>
                             🏆 Premiação: {formatPrice(event.prizePool)}
                           </span>
@@ -244,4 +244,3 @@ export function TimelinePage() {
     </AppLayout>
   );
 }
-

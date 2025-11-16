@@ -10,14 +10,19 @@ import {
   createUser,
   deleteUser,
   updateUserRoles,
+  importUsersFromCsv,
   AVAILABLE_ROLES,
   type UserResponse,
   type CreateUserRequest,
+  type CsvImportResponse,
 } from "../api/admin";
 
 export function UsersManagementPage() {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const { language } = useLanguage();
+  
+  // Verificar se o usuário é admin
+  const isAdmin = user?.roles?.includes("ADMIN") ?? false;
   const navigate = useNavigate();
   const [users, setUsers] = useState<UserResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,6 +38,10 @@ export function UsersManagementPage() {
     isActive: true,
   });
   const [selectedRoles, setSelectedRoles] = useState<string[]>(["USER"]);
+  const [showCsvImport, setShowCsvImport] = useState(false);
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [importResult, setImportResult] = useState<CsvImportResponse | null>(null);
+  const [importing, setImporting] = useState(false);
 
   useEffect(() => {
     loadUsers();
@@ -121,6 +130,37 @@ export function UsersManagementPage() {
     );
   };
 
+  const handleCsvImport = async () => {
+    if (!token || !csvFile) return;
+
+    try {
+      setImporting(true);
+      setImportResult(null);
+      const result = await importUsersFromCsv(token, csvFile);
+      setImportResult(result);
+      await loadUsers();
+      
+      if (result.failedImports === 0) {
+        alert(
+          language === "pt"
+            ? `✅ Importação concluída com sucesso!\n\n${result.successfulImports} usuários foram convertidos e persistidos no banco de dados.`
+            : `✅ Import completed successfully!\n\n${result.successfulImports} users were converted and persisted in the database.`
+        );
+      } else {
+        alert(
+          language === "pt"
+            ? `⚠️ Importação concluída com avisos:\n\n${result.successfulImports} usuários foram importados com sucesso.\n${result.failedImports} falhas encontradas. Verifique os erros abaixo.`
+            : `⚠️ Import completed with warnings:\n\n${result.successfulImports} users imported successfully.\n${result.failedImports} failures found. Check errors below.`
+        );
+      }
+    } catch (error) {
+      console.error("Error importing CSV:", error);
+      alert("Erro ao importar CSV: " + (error as Error).message);
+    } finally {
+      setImporting(false);
+    }
+  };
+
   return (
     <AppLayout>
       <BackButton to="/painel/admin" />
@@ -135,25 +175,39 @@ export function UsersManagementPage() {
               : "Register users and assign roles (ADMIN, INSTRUCTOR, STUDENT, USER)"}
           </p>
         </div>
-        <button
-          className="button"
-          onClick={() => {
-            if (showForm) {
-              resetForm();
-            } else {
-              setShowForm(true);
-              setEditingUser(null);
-            }
-          }}
-        >
-          {showForm
-            ? language === "pt"
-              ? "Cancelar"
-              : "Cancel"
-            : language === "pt"
-            ? "Novo Usuário"
-            : "New User"}
-        </button>
+        <div style={{ display: "flex", gap: "12px" }}>
+          {isAdmin && (
+            <button
+              className="button button-secondary"
+              onClick={() => {
+                setShowCsvImport(!showCsvImport);
+                setImportResult(null);
+                setCsvFile(null);
+              }}
+            >
+              {language === "pt" ? "📥 Importar Arquivo" : "📥 Import File"}
+            </button>
+          )}
+          <button
+            className="button"
+            onClick={() => {
+              if (showForm) {
+                resetForm();
+              } else {
+                setShowForm(true);
+                setEditingUser(null);
+              }
+            }}
+          >
+            {showForm
+              ? language === "pt"
+                ? "Cancelar"
+                : "Cancel"
+              : language === "pt"
+              ? "Novo Usuário"
+              : "New User"}
+          </button>
+        </div>
       </div>
 
       <div className="metrics-grid" style={{ marginBottom: "24px" }}>
@@ -288,6 +342,127 @@ export function UsersManagementPage() {
             {language === "pt" ? "Criar Usuário" : "Create User"}
           </button>
         </form>
+      )}
+
+      {showCsvImport && isAdmin && (
+        <div className="panel" style={{ marginBottom: "24px" }}>
+          <h2>{language === "pt" ? "Importar Usuários via CSV" : "Import Users via CSV"}</h2>
+          <p style={{ color: "var(--text-muted)", marginBottom: "16px" }}>
+            {language === "pt"
+              ? "Faça upload de um arquivo CSV. O sistema converterá e persistirá os dados no banco de dados automaticamente."
+              : "Upload a CSV file. The system will convert and persist the data in the database automatically."}
+          </p>
+          <div style={{ 
+            padding: "12px", 
+            background: "var(--bg-tertiary)", 
+            borderRadius: "6px", 
+            marginBottom: "16px",
+            fontSize: "14px"
+          }}>
+            <strong>{language === "pt" ? "Colunas obrigatórias:" : "Required columns:"}</strong> username, email, password, full_name<br/>
+            <strong>{language === "pt" ? "Colunas opcionais:" : "Optional columns:"}</strong> phone_number, roles (separados por ; ou ,), is_active (true/false)
+          </div>
+          
+          <div className="form-field" style={{ marginBottom: "16px" }}>
+            <label style={{ display: "block", marginBottom: "8px" }}>
+              {language === "pt" ? "Arquivo CSV" : "CSV File"}
+            </label>
+            <input
+              type="file"
+              accept=".csv"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  setCsvFile(file);
+                  setImportResult(null);
+                }
+              }}
+              style={{
+                padding: "8px",
+                border: "1px solid var(--border-color)",
+                borderRadius: "6px",
+                background: "var(--bg-secondary)",
+                color: "var(--text-primary)",
+                width: "100%",
+              }}
+            />
+          </div>
+
+          {csvFile && (
+            <div style={{ marginBottom: "16px", padding: "12px", background: "var(--bg-tertiary)", borderRadius: "6px" }}>
+              <strong>{language === "pt" ? "Arquivo selecionado:" : "Selected file:"}</strong> {csvFile.name}
+            </div>
+          )}
+
+          <div style={{ display: "flex", gap: "12px" }}>
+            <button
+              className="button"
+              onClick={handleCsvImport}
+              disabled={!csvFile || importing}
+            >
+              {importing
+                ? language === "pt"
+                  ? "Importando..."
+                  : "Importing..."
+                : language === "pt"
+                ? "Importar"
+                : "Import"}
+            </button>
+            <button
+              className="button button-secondary"
+              onClick={() => {
+                setShowCsvImport(false);
+                setCsvFile(null);
+                setImportResult(null);
+              }}
+            >
+              {language === "pt" ? "Cancelar" : "Cancel"}
+            </button>
+          </div>
+
+          {importResult && (
+            <div style={{ marginTop: "24px", padding: "16px", background: "var(--bg-tertiary)", borderRadius: "6px" }}>
+              <h3 style={{ marginBottom: "12px" }}>
+                {language === "pt" ? "Resultado da Importação" : "Import Result"}
+              </h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "12px", marginBottom: "16px" }}>
+                <div>
+                  <strong>{language === "pt" ? "Total de linhas:" : "Total rows:"}</strong> {importResult.totalRows}
+                </div>
+                <div style={{ color: "var(--success)" }}>
+                  <strong>{language === "pt" ? "Sucessos:" : "Success:"}</strong> {importResult.successfulImports}
+                </div>
+                <div style={{ color: "var(--error)" }}>
+                  <strong>{language === "pt" ? "Falhas:" : "Failed:"}</strong> {importResult.failedImports}
+                </div>
+              </div>
+
+              {importResult.errors.length > 0 && (
+                <div>
+                  <strong style={{ color: "var(--error)" }}>
+                    {language === "pt" ? "Erros encontrados:" : "Errors found:"}
+                  </strong>
+                  <div style={{ marginTop: "8px", maxHeight: "200px", overflowY: "auto" }}>
+                    {importResult.errors.map((error, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          padding: "8px",
+                          marginBottom: "4px",
+                          background: "var(--bg-secondary)",
+                          borderRadius: "4px",
+                          fontSize: "14px",
+                        }}
+                      >
+                        <strong>Linha {error.rowNumber}</strong> - {error.field}: {error.message}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       )}
 
       {editingUser && (

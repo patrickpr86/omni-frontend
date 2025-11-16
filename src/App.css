@@ -671,14 +671,32 @@ textarea::placeholder {
   border: 1px solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
-  transition: all 0.3s;
+  transition: all 0.25s ease;
   cursor: pointer;
+  position: relative;
+}
+
+.content-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(59, 130, 246, 0);
+  transition: background 0.25s ease;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .content-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-color: var(--primary);
+}
+
+.content-card:hover::before {
+  background: rgba(59, 130, 246, 0.03);
 }
 
 .content-card-image {
@@ -686,10 +704,17 @@ textarea::placeholder {
   height: 200px;
   object-fit: cover;
   background: var(--bg-tertiary);
+  transition: transform 0.25s ease;
+}
+
+.content-card:hover .content-card-image {
+  transform: scale(1.02);
 }
 
 .content-card-body {
   padding: 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .content-card-title {
