@@ -43,6 +43,7 @@ export interface UpdateCourseRequest {
   price?: number;
   discountPrice?: number;
   instructorId?: number;
+  targetAudience?: string;
 }
 
 export interface CourseResponse {
@@ -66,6 +67,7 @@ export interface CourseResponse {
   totalLessons?: number;
   totalMaterials?: number;
   isEnrolled?: boolean;
+  targetAudience?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -133,6 +135,38 @@ export async function deleteUser(token: string, userId: number): Promise<void> {
   );
 }
 
+/**
+ * Import users from CSV file (Admin only)
+ */
+export interface CsvImportResponse {
+  totalRows: number;
+  successfulImports: number;
+  failedImports: number;
+  errors: Array<{
+    rowNumber: number;
+    field: string;
+    message: string;
+  }>;
+}
+
+export async function importUsersFromCsv(
+  token: string,
+  file: File
+): Promise<CsvImportResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await apiFetch<{ success: boolean; message: string; data: CsvImportResponse }>(
+    "/api/admin/users/import-csv",
+    {
+      method: "POST",
+      token,
+      body: formData,
+    }
+  );
+  return response.data;
+}
+
 // ==================== COURSE MANAGEMENT ====================
 
 /**
@@ -194,6 +228,212 @@ export async function deleteCourseAdmin(token: string, courseId: number): Promis
       token,
     }
   );
+}
+
+// ==================== FILE UPLOAD ====================
+
+export interface FileUploadResponse {
+  success: boolean;
+  url: string;
+  type: string;
+  filename: string;
+  size: number;
+}
+
+export async function uploadVideo(token: string, file: File): Promise<FileUploadResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+  
+  const response = await apiFetch<FileUploadResponse>("/api/admin/files/video", {
+    method: "POST",
+    token,
+    body: formData,
+  });
+  return response;
+}
+
+export async function uploadAudio(token: string, file: File): Promise<FileUploadResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+  
+  const response = await apiFetch<FileUploadResponse>("/api/admin/files/audio", {
+    method: "POST",
+    token,
+    body: formData,
+  });
+  return response;
+}
+
+export async function uploadImage(token: string, file: File): Promise<FileUploadResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+  
+  const response = await apiFetch<FileUploadResponse>("/api/admin/files/image", {
+    method: "POST",
+    token,
+    body: formData,
+  });
+  return response;
+}
+
+export async function uploadDocument(token: string, file: File): Promise<FileUploadResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+  
+  const response = await apiFetch<FileUploadResponse>("/api/admin/files/document", {
+    method: "POST",
+    token,
+    body: formData,
+  });
+  return response;
+}
+
+export async function uploadCourseThumbnail(token: string, file: File): Promise<FileUploadResponse> {
+  const formData = new FormData();
+  formData.append("file", file);
+  
+  const response = await apiFetch<FileUploadResponse>("/api/admin/files/course-thumbnail", {
+    method: "POST",
+    token,
+    body: formData,
+  });
+  return response;
+}
+
+// ==================== COURSE SECTIONS ====================
+
+export interface CourseSectionRequest {
+  title: string;
+  description?: string;
+  usefulLinks?: string;
+  orderIndex?: number;
+  videoLesson?: {
+    title: string;
+    description?: string;
+    videoUrl: string;
+    durationMinutes?: number;
+    orderIndex?: number;
+  };
+  materials?: Array<{
+    title: string;
+    description?: string;
+    fileUrl: string;
+    fileType?: string;
+    fileSize?: number;
+    orderIndex?: number;
+  }>;
+}
+
+export async function createCourseSection(
+  token: string,
+  courseId: number,
+  request: CourseSectionRequest
+): Promise<any> {
+  const response = await apiFetch<{ success: boolean; data: any }>(
+    `/api/admin/courses/${courseId}/sections`,
+    {
+      method: "POST",
+      token,
+      json: request,
+    }
+  );
+  return response.data;
+}
+
+export async function updateCourseSection(
+  token: string,
+  courseId: number,
+  sectionId: number,
+  request: CourseSectionRequest
+): Promise<any> {
+  const response = await apiFetch<{ success: boolean; data: any }>(
+    `/api/admin/courses/${courseId}/sections/${sectionId}`,
+    {
+      method: "PUT",
+      token,
+      json: request,
+    }
+  );
+  return response.data;
+}
+
+export async function deleteCourseSection(
+  token: string,
+  courseId: number,
+  sectionId: number
+): Promise<void> {
+  await apiFetch<{ success: boolean }>(
+    `/api/admin/courses/${courseId}/sections/${sectionId}`,
+    {
+      method: "DELETE",
+      token,
+    }
+  );
+}
+
+export async function getCourseSections(token: string, courseId: number): Promise<any[]> {
+  const response = await apiFetch<{ success: boolean; data: any[] }>(
+    `/api/admin/courses/${courseId}/sections`,
+    { token }
+  );
+  return response.data;
+}
+
+// ==================== COURSE QUIZZES ====================
+
+export async function createCourseQuiz(
+  token: string,
+  courseId: number,
+  request: CourseQuizRequest
+): Promise<any> {
+  const response = await apiFetch<{ success: boolean; data: any }>(
+    `/api/admin/courses/${courseId}/quizzes`,
+    {
+      method: "POST",
+      token,
+      json: request,
+    }
+  );
+  return response.data;
+}
+
+export async function updateCourseQuiz(
+  token: string,
+  courseId: number,
+  quizId: number,
+  request: CourseQuizRequest
+): Promise<any> {
+  const response = await apiFetch<{ success: boolean; data: any }>(
+    `/api/admin/courses/${courseId}/quizzes/${quizId}`,
+    {
+      method: "PUT",
+      token,
+      json: request,
+    }
+  );
+  return response.data;
+}
+
+export async function deleteCourseQuiz(
+  token: string,
+  courseId: number,
+  quizId: number
+): Promise<void> {
+  await apiFetch<{ success: boolean }>(
+    `/api/admin/courses/${courseId}/quizzes/${quizId}`,
+    {
+      method: "DELETE",
+      token,
+    }
+  );
+}
+
+export async function getCourseQuizzes(token: string, courseId: number): Promise<any[]> {
+  const response = await apiFetch<{ success: boolean; data: any[] }>(
+    `/api/admin/courses/${courseId}/quizzes`,
+    { token }
+  );
+  return response.data;
 }
 
 /**
