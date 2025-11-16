@@ -9,14 +9,29 @@ import { PasswordResetPage } from "./pages/PasswordResetPage.tsx";
 import { SchedulingPage } from "./pages/dashboard/SchedulingPage.tsx";
 import { StudentDashboardPage } from "./pages/dashboard/StudentDashboardPage.tsx";
 import { TeacherDashboardPage } from "./pages/dashboard/TeacherDashboardPage.tsx";
-import { AdminAnalyticsPage } from "./pages/dashboard/AdminAnalyticsPage.tsx";
+import { AdminDashboardPage } from "./pages/AdminDashboardPage.tsx";
+import { TimelinePage } from "./pages/TimelinePage.tsx";
+import { AdminTimelinePage } from "./pages/AdminTimelinePage.tsx";
+import { ChampionshipsPage } from "./pages/ChampionshipsPage.tsx";
+import { MyAgendaPage } from "./pages/MyAgendaPage.tsx";
 import { ContentsPage } from "./pages/ContentsPage.tsx";
 import { RankingPage } from "./pages/RankingPage.tsx";
 import { MyAccountPage } from "./pages/MyAccountPage.tsx";
 import { SupportPage } from "./pages/SupportPage.tsx";
 import { NotificationsPage } from "./pages/NotificationsPage.tsx";
-import { CoursesManagementPage } from "./pages/CoursesManagementPage.tsx";
+import { CoursesManagementPageNew } from "./pages/CoursesManagementPageNew.tsx";
+import { UsersManagementPage } from "./pages/UsersManagementPage.tsx";
+import { UserDetailPage } from "./pages/UserDetailPage.tsx";
 import { CoursesPage } from "./pages/CoursesPage.tsx";
+import { AdminFinancialDashboardPage } from "./pages/AdminFinancialDashboardPage.tsx";
+import { AdminTransactionsPage } from "./pages/AdminTransactionsPage.tsx";
+import { MyFinancesPage } from "./pages/MyFinancesPage.tsx";
+import { MyEarningsPage } from "./pages/MyEarningsPage.tsx";
+import { AvailableTeachersPage } from "./pages/AvailableTeachersPage.tsx";
+import { BookLessonPage } from "./pages/BookLessonPage.tsx";
+import { MyBookingsPage } from "./pages/MyBookingsPage.tsx";
+import { TeacherBookingsPage } from "./pages/TeacherBookingsPage.tsx";
+import { SignUpPage } from "./pages/SignUpPage.tsx";
 
 function ProtectedRoute({ children }: { children: ReactElement }) {
   const { isAuthenticated } = useAuth();
@@ -37,6 +52,10 @@ function App() {
       <Route
         path="/login"
         element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />}
+      />
+      <Route
+        path="/cadastro"
+        element={isAuthenticated ? <Navigate to="/" replace /> : <SignUpPage />}
       />
       <Route
         path="/reset-senha"
@@ -88,7 +107,39 @@ function App() {
         path="/painel/admin"
         element={
           <ProtectedRoute>
-            <AdminAnalyticsPage />
+            <AdminDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/eventos"
+        element={
+          <ProtectedRoute>
+            <TimelinePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/minha-agenda"
+        element={
+          <ProtectedRoute>
+            <MyAgendaPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/campeonatos"
+        element={
+          <ProtectedRoute>
+            <ChampionshipsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/timeline"
+        element={
+          <ProtectedRoute>
+            <AdminTimelinePage />
           </ProtectedRoute>
         }
       />
@@ -144,7 +195,87 @@ function App() {
         path="/admin/cursos"
         element={
           <ProtectedRoute>
-            <CoursesManagementPage />
+            <CoursesManagementPageNew />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/usuarios"
+        element={
+          <ProtectedRoute>
+            <UsersManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/usuarios/:userId"
+        element={
+          <ProtectedRoute>
+            <UserDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/financeiro"
+        element={
+          <ProtectedRoute>
+            <AdminFinancialDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/financeiro/transacoes"
+        element={
+          <ProtectedRoute>
+            <AdminTransactionsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/minhas-financas"
+        element={
+          <ProtectedRoute>
+            <MyFinancesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/meus-ganhos"
+        element={
+          <ProtectedRoute>
+            <MyEarningsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/professores-disponiveis"
+        element={
+          <ProtectedRoute>
+            <AvailableTeachersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/agendar-aula/:teacherId"
+        element={
+          <ProtectedRoute>
+            <BookLessonPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/minhas-aulas"
+        element={
+          <ProtectedRoute>
+            <MyBookingsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/gerenciar-solicitacoes"
+        element={
+          <ProtectedRoute>
+            <TeacherBookingsPage />
           </ProtectedRoute>
         }
       />
