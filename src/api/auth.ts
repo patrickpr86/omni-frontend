@@ -33,3 +33,25 @@ export function resetPassword(payload: PasswordResetPayload) {
     json: payload,
   });
 }
+
+export interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+  fullName?: string;
+  phoneNumber?: string;
+}
+
+export interface RegisterResponse {
+  message: string;
+  username: string;
+  email: string;
+  roles: string[];
+}
+
+export async function registerUser(params: RegisterRequest): Promise<RegisterResponse> {
+  return apiFetch<RegisterResponse>("/api/auth/register", {
+    method: "POST",
+    json: params,
+  });
+}
