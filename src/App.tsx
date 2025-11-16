@@ -4,7 +4,6 @@ import "./App.css";
 import { useAuth } from "./context/AuthContext.tsx";
 import { LoginPage } from "./pages/LoginPage.tsx";
 import { DashboardPage } from "./pages/DashboardPage.tsx";
-import { ProfilePage } from "./pages/ProfilePage.tsx";
 import { PasswordResetPage } from "./pages/PasswordResetPage.tsx";
 import { SchedulingPage } from "./pages/dashboard/SchedulingPage.tsx";
 import { StudentDashboardPage } from "./pages/dashboard/StudentDashboardPage.tsx";
@@ -16,13 +15,16 @@ import { ChampionshipsPage } from "./pages/ChampionshipsPage.tsx";
 import { MyAgendaPage } from "./pages/MyAgendaPage.tsx";
 import { ContentsPage } from "./pages/ContentsPage.tsx";
 import { RankingPage } from "./pages/RankingPage.tsx";
-import { MyAccountPage } from "./pages/MyAccountPage.tsx";
+import { AccountPage } from "./pages/AccountPage.tsx";
 import { SupportPage } from "./pages/SupportPage.tsx";
 import { NotificationsPage } from "./pages/NotificationsPage.tsx";
 import { CoursesManagementPageNew } from "./pages/CoursesManagementPageNew.tsx";
+import { CourseManagementPage } from "./pages/CourseManagementPage.tsx";
+import { CourseEditPage } from "./pages/CourseEditPage.tsx";
 import { UsersManagementPage } from "./pages/UsersManagementPage.tsx";
 import { UserDetailPage } from "./pages/UserDetailPage.tsx";
 import { CoursesPage } from "./pages/CoursesPage.tsx";
+import { CourseDetailPage } from "./pages/CourseDetailPage.tsx";
 import { AdminFinancialDashboardPage } from "./pages/AdminFinancialDashboardPage.tsx";
 import { AdminTransactionsPage } from "./pages/AdminTransactionsPage.tsx";
 import { MyFinancesPage } from "./pages/MyFinancesPage.tsx";
@@ -68,14 +70,6 @@ function App() {
         element={
           <ProtectedRoute>
             <DashboardPage />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/perfil"
-        element={
-          <ProtectedRoute>
-            <ProfilePage />
           </ProtectedRoute>
         }
       />
@@ -163,7 +157,15 @@ function App() {
         path="/minha-conta"
         element={
           <ProtectedRoute>
-            <MyAccountPage />
+            <AccountPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/perfil"
+        element={
+          <ProtectedRoute>
+            <AccountPage />
           </ProtectedRoute>
         }
       />
@@ -192,10 +194,26 @@ function App() {
         }
       />
       <Route
+        path="/cursos/:courseId"
+        element={
+          <ProtectedRoute>
+            <CourseDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/admin/cursos"
         element={
           <ProtectedRoute>
-            <CoursesManagementPageNew />
+            <CourseManagementPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/cursos/:courseId/editar"
+        element={
+          <ProtectedRoute>
+            <CourseEditPage />
           </ProtectedRoute>
         }
       />
