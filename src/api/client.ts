@@ -14,8 +14,13 @@ export async function apiFetch<T>(
 ): Promise<T> {
   const finalHeaders = new Headers(headers ?? {});
 
+  // Não definir Content-Type para FormData - o browser define automaticamente com boundary
+  const isFormData = init.body instanceof FormData;
+  
   if (json !== undefined) {
     finalHeaders.set("Content-Type", "application/json");
+  } else if (!isFormData) {
+    // Se não for FormData e não tiver Content-Type definido, manter o padrão
   }
 
   if (token) {

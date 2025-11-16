@@ -1,60 +1,75 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppLayout } from "../components/AppLayout";
 import { BackButton } from "../components/BackButton";
 import { useLanguage } from "../context/LanguageContext";
+import { useAuth } from "../context/AuthContext";
+import { fetchCourses, type Course } from "../api/courses";
 
 export function ContentsPage() {
   const { language } = useLanguage();
+  const { token } = useAuth();
+  const navigate = useNavigate();
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const contents = [
-    {
-      id: 1,
-      title: language === "pt" ? "Boas Práticas em Desenvolvimento" : "Development Best Practices",
-      description: language === "pt" 
-        ? "Aprenda as melhores práticas para desenvolvimento de software moderno."
-        : "Learn the best practices for modern software development.",
-      image: "https://images.unsplash.com/photo-1516116216624-53e697fedbea?w=400&h=300&fit=crop",
-    },
-    {
-      id: 2,
-      title: language === "pt" ? "Arquitetura de Microserviços" : "Microservices Architecture",
-      description: language === "pt"
-        ? "Entenda como construir aplicações escaláveis com microserviços."
-        : "Understand how to build scalable applications with microservices.",
-      image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400&h=300&fit=crop",
-    },
-    {
-      id: 3,
-      title: language === "pt" ? "TypeScript Avançado" : "Advanced TypeScript",
-      description: language === "pt"
-        ? "Domine os recursos avançados do TypeScript para aplicações robustas."
-        : "Master advanced TypeScript features for robust applications.",
-      image: "https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=400&h=300&fit=crop",
-    },
-    {
-      id: 4,
-      title: language === "pt" ? "React & Performance" : "React & Performance",
-      description: language === "pt"
-        ? "Otimize suas aplicações React para máxima performance."
-        : "Optimize your React applications for maximum performance.",
-      image: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=300&fit=crop",
-    },
-    {
-      id: 5,
-      title: language === "pt" ? "DevOps & CI/CD" : "DevOps & CI/CD",
-      description: language === "pt"
-        ? "Automatize seus pipelines e melhore o deploy de aplicações."
-        : "Automate your pipelines and improve application deployment.",
-      image: "https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=400&h=300&fit=crop",
-    },
-    {
-      id: 6,
-      title: language === "pt" ? "Segurança em Aplicações Web" : "Web Application Security",
-      description: language === "pt"
-        ? "Proteja suas aplicações contra vulnerabilidades comuns."
-        : "Protect your applications against common vulnerabilities.",
-      image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400&h=300&fit=crop",
-    },
-  ];
+  useEffect(() => {
+    loadCourses();
+  }, []);
+
+  const loadCourses = async () => {
+    try {
+      setLoading(true);
+      const data = await fetchCourses(token || "");
+      setCourses(data);
+    } catch (error) {
+      console.error("Error loading courses:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatPrice = (price: number, discountPrice?: number) => {
+    if (discountPrice && discountPrice < price) {
+      return (
+        <>
+          <span style={{ textDecoration: "line-through", color: "var(--text-muted)", marginRight: "8px" }}>
+            R$ {price.toFixed(2)}
+          </span>
+          <span style={{ color: "var(--success)", fontWeight: "bold" }}>
+            R$ {discountPrice.toFixed(2)}
+          </span>
+        </>
+      );
+    }
+    return price > 0 ? `R$ ${price.toFixed(2)}` : language === "pt" ? "Grátis" : "Free";
+  };
+
+  const getDifficultyColor = (level?: string) => {
+    switch (level) {
+      case "BEGINNER":
+        return "var(--success)";
+      case "INTERMEDIATE":
+        return "var(--warning)";
+      case "ADVANCED":
+        return "var(--danger)";
+      default:
+        return "var(--text-muted)";
+    }
+  };
+
+  const getDifficultyLabel = (level?: string) => {
+    switch (level) {
+      case "BEGINNER":
+        return language === "pt" ? "Iniciante" : "Beginner";
+      case "INTERMEDIATE":
+        return language === "pt" ? "Intermediário" : "Intermediate";
+      case "ADVANCED":
+        return language === "pt" ? "Avançado" : "Advanced";
+      default:
+        return level || "";
+    }
+  };
 
   return (
     <AppLayout>
@@ -70,23 +85,138 @@ export function ContentsPage() {
         </p>
       </div>
 
-      <div className="content-grid">
-        {contents.map((content) => (
-          <div key={content.id} className="content-card">
-            <img
-              src={content.image}
-              alt={content.title}
-              className="content-card-image"
-            />
-            <div className="content-card-body">
-              <h3 className="content-card-title">{content.title}</h3>
-              <p className="content-card-description">{content.description}</p>
+      {loading ? (
+        <div style={{ textAlign: "center", padding: "48px" }}>
+          <p>{language === "pt" ? "Carregando cursos..." : "Loading courses..."}</p>
+        </div>
+      ) : courses.length === 0 ? (
+        <div style={{ textAlign: "center", padding: "48px" }}>
+          <p>{language === "pt" ? "Nenhum curso disponível" : "No courses available"}</p>
+        </div>
+      ) : (
+        <div className="content-grid">
+          {courses.map((course) => (
+            <div 
+              key={course.id} 
+              className="content-card"
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate(`/cursos/${course.id}`)}
+            >
+              {course.thumbnailUrl ? (
+                <div style={{ position: "relative", zIndex: 1 }}>
+                  <img
+                    src={course.thumbnailUrl}
+                    alt={course.title}
+                    className="content-card-image"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "https://via.placeholder.com/400x300?text=Course";
+                    }}
+                  />
+                </div>
+              ) : (
+                <div 
+                  className="content-card-image" 
+                  style={{ 
+                    backgroundColor: "var(--border-color)", 
+                    display: "flex", 
+                    alignItems: "center", 
+                    justifyContent: "center",
+                    color: "var(--text-muted)"
+                  }}
+                >
+                  {language === "pt" ? "Sem imagem" : "No image"}
+                </div>
+              )}
+              <div className="content-card-body">
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "8px" }}>
+                  <h3 className="content-card-title" style={{ flex: 1, margin: 0 }}>{course.title}</h3>
+                  {course.featured && (
+                    <span style={{ 
+                      background: "var(--primary)", 
+                      color: "white", 
+                      padding: "4px 8px", 
+                      borderRadius: "4px", 
+                      fontSize: "12px",
+                      marginLeft: "8px"
+                    }}>
+                      {language === "pt" ? "Destaque" : "Featured"}
+                    </span>
+                  )}
+                </div>
+                <p className="content-card-description" style={{ 
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  marginBottom: "12px"
+                }}>
+                  {course.description || (language === "pt" ? "Sem descrição" : "No description")}
+                </p>
+                
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
+                  {course.difficultyLevel && (
+                    <span style={{ 
+                      padding: "4px 8px", 
+                      borderRadius: "4px", 
+                      fontSize: "12px",
+                      backgroundColor: getDifficultyColor(course.difficultyLevel) + "20",
+                      color: getDifficultyColor(course.difficultyLevel)
+                    }}>
+                      {getDifficultyLabel(course.difficultyLevel)}
+                    </span>
+                  )}
+                  {course.durationHours && (
+                    <span style={{ 
+                      padding: "4px 8px", 
+                      borderRadius: "4px", 
+                      fontSize: "12px",
+                      backgroundColor: "var(--border-color)"
+                    }}>
+                      {course.durationHours}h
+                    </span>
+                  )}
+                  {course.totalLessons > 0 && (
+                    <span style={{ 
+                      padding: "4px 8px", 
+                      borderRadius: "4px", 
+                      fontSize: "12px",
+                      backgroundColor: "var(--border-color)"
+                    }}>
+                      {course.totalLessons} {language === "pt" ? "aulas" : "lessons"}
+                    </span>
+                  )}
+                </div>
+
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "auto" }}>
+                  <div style={{ fontSize: "18px", fontWeight: "bold" }}>
+                    {formatPrice(course.price, course.discountPrice)}
+                  </div>
+                  {course.instructor && (
+                    <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+                      {course.instructor.name}
+                    </div>
+                  )}
+                </div>
+
+                {course.isEnrolled && (
+                  <div style={{ 
+                    marginTop: "8px", 
+                    padding: "8px", 
+                    backgroundColor: "var(--success)20", 
+                    borderRadius: "4px",
+                    textAlign: "center",
+                    fontSize: "14px",
+                    color: "var(--success)",
+                    fontWeight: "bold"
+                  }}>
+                    {language === "pt" ? "✓ Inscrito" : "✓ Enrolled"}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </AppLayout>
   );
 }
-
-

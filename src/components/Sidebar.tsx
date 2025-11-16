@@ -194,8 +194,7 @@ export function Sidebar() {
     { to: "/eventos", label: language === "pt" ? "Eventos" : "Events", icon: "timeline" },
     { to: "/minha-agenda", label: language === "pt" ? "Minha Agenda" : "My Agenda", icon: "calendar" },
     { to: "/campeonatos", label: language === "pt" ? "Campeonatos" : "Championships", icon: "championship" },
-    { to: "/perfil", label: language === "pt" ? "Perfil" : "Profile", icon: "profile" },
-    { to: "/minha-conta", label: language === "pt" ? "Minha conta" : "My Account", icon: "account" },
+    { to: "/minha-conta", label: language === "pt" ? "Minha Conta" : "My Account", icon: "account" },
     { to: "/atendimento", label: language === "pt" ? "Atendimento" : "Support", icon: "support" },
   ];
 
